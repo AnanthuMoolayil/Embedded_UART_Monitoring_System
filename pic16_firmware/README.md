@@ -1,138 +1,50 @@
-# Embedded UART Power Monitor
+# PIC16F877A Firmware
 
-## Project Overview
+## Overview
 
-Embedded monitoring system built around the PIC16F877A microcontroller and a desktop host application communicating through a custom UART command protocol.
+Firmware for the **PIC16F877A** implementing UART-based monitoring, ADC acquisition, EEPROM persistence, uptime tracking, state monitoring, and event logging.
 
-The firmware acquires voltage and temperature measurements using the ADC subsystem, tracks system uptime, stores configuration data in EEPROM, monitors thermal state transitions, and maintains an event log. A PC-side CLI application provides a user-friendly interface for interacting with the embedded device.
+The firmware communicates with a host PC over UART and provides real-time system information, configuration management, and persistent storage of critical settings.
 
 ---
 
 ## Features
 
-### Firmware
-- UART command processing
-- ADC-based voltage monitoring
-- ADC-based temperature monitoring
-- Temperature threshold configuration
-- EEPROM-backed persistent storage
-- Uptime tracking using Timer1 interrupts
-- Event logging with timestamps
-- Overheat state monitoring
-- Circular buffer log management
-
-### PC Host Application
-- Command-line interface
-- Serial communication using libserialport
-- Command table architecture
-- Configuration-file support
-- Response parsing and display
-- Input validation and error handling
+* Voltage & temperature monitoring via ADC
+* EEPROM-backed persistent configuration for configurable temperature threshold
+* Circular-buffer event logging
+* Uptime tracking using Timer1
+* UART command protocol
+* System state monitoring (OK / OVERHEAT)
 
 ---
 
-## System Architecture
+## Architecture
 
 ```text
-+-----------+
-|   User    |
-+-----------+
-      |
-      v
-+-------------------+
-|  PC Host Program  |
-+-------------------+
-      |
-      | UART
-      v
-+-------------------+
-| Command Processor |
-+-------------------+
-      |
-      +-------------------+
-      |                   |
-      v                   v
-+-----------+      +-------------+
-|    ADC    |      |   EEPROM    |
-+-----------+      +-------------+
-      |                   |
-      +---------+---------+
-                |
-                v
-         +-------------+
-         |  Monitoring |
-         +-------------+
-                |
-                v
-         +-------------+
-         |   Logging   |
-         +-------------+
++------------------------------------------------+
+|                    Firmware                    |
++------------------------------------------------+
+                     |
+                     v
++-----------------------------------------------+
+|               Command Processor               |
++-----------------------------------------------+
+                     |
+                     v
++-----------------------------------------------+
+|                  Services                     |
+|-----------------------------------------------|
+| Sensor Service | Logging Service | Uptime     |
++-----------------------------------------------+
+                     |
+                     v
++-----------------------------------------------+
+|                   Drivers                     |
+|-----------------------------------------------|
+| UART | ADC | EEPROM | Timer                   |
++-----------------------------------------------+
 ```
-
----
-
-## Firmware Architecture
-
-### Driver Layer
-- UART Driver
-- ADC Driver
-- EEPROM Driver
-- Timer1 Driver
-
-### Service Layer
-- Sensor Conversion
-- Uptime Tracking
-- Logging Service
-- State Monitoring
-
-### Application Layer
-- Command Parser
-- Command Executor
-- UART Protocol Handler
-
----
-
-## UART Protocol
-
-### Requests
-
-```text
-get_voltage
-get_temp
-get_status
-get_tlimit
-set_tlimit <value>
-get_time
-get_log
-clear_log
-get_all
-```
-
-### Response Terminator
-
-All responses end with:
-
-```text
-***
-```
-
-This allows the host application to determine when a complete response has been received.
-
----
-
-## Command Reference
-
-| Command | Description |
-|----------|-------------|
-| get_voltage | Display voltage reading |
-| get_temp | Display temperature reading |
-| get_status | Display OK / OVERHEAT status |
-| get_tlimit | Display configured temperature limit |
-| set_tlimit value | Update temperature limit |
-| get_time | Display uptime |
-| get_log | Display event log |
-| clear_log | Clear event log |
-| get_all | Display all system information |
 
 ---
 
@@ -140,169 +52,122 @@ This allows the host application to determine when a complete response has been 
 
 ### Validation Byte
 
-Address:
+A validation byte is stored to determine whether EEPROM contains valid configuration data.
 
-```text
-0x00
-```
+| Address | Value  |
+| ------- | ------ |
+| `0x00`  | `0xBD` |
 
-Value:
+On startup:
 
-```text
-0xBD
-```
+1. Firmware checks address `0x00`.
+2. If value equals `0xBD`, stored configuration is loaded.
+3. Otherwise, default configuration values are used and written to EEPROM.
 
-Used to determine whether EEPROM has been initialized.
+---
 
-### Persistent Temperature Limit
+### Temperature Limit Storage
 
-Address Pair:
+| Parameter         | EEPROM Address             |
+| ----------------- | -------------------------- |
+| Temperature Limit | `0x02` (MSB), `0x01` (LSB) |
 
-```text
-0x0201
-```
-
-Stores:
-
-```text
-Temperature threshold
-```
-
-Default:
-
-```text
-70.0 °C
-```
+The temperature threshold is retained across power cycles.
 
 ---
 
 ## Logging System
 
-A circular buffer is used to store system events.
-
-### Log Entry Format
-
-```text
-UPTIME: HH:MM:SS   STATE
-```
-
-Example:
-
-```text
-UPTIME: 0:3:17   OVERHEAT
-UPTIME: 0:5:41   OK
-```
+The firmware maintains a circular buffer containing the latest **5 log entries**.
 
 ### Logged Events
 
-- OK → OVERHEAT
-- OVERHEAT → OK
+* `OK → OVERHEAT`
+* `OVERHEAT → OK`
 
-Maximum entries:
+Each log entry contains:
 
-```text
-5
-```
+* Timestamp (uptime)
+* Previous state
+* Current state
 
-Oldest entries are overwritten when the buffer becomes full.
+When the buffer becomes full, the oldest entry is overwritten.
+
+---
+
+## UART Command Protocol
+
+### Supported Commands
+
+| Command       | Description                        |
+| ------------- | ---------------------------------- |
+| `get_voltage` | Read current voltage               |
+| `get_temp`    | Read current temperature           |
+| `get_status`  | Read system status                 |
+| `get_tlimit`  | Read configured temperature limit  |
+| `set_tlimit`  | Update temperature limit           |
+| `get_time`    | Read system uptime                 |
+| `get_log`     | Retrieve event logs                |
+| `clear_log`   | Clear stored logs                  |
+| `get_all`     | Retrieve all available information |
 
 ---
 
 ## State Monitoring
 
-Temperature readings are continuously compared against the configured threshold.
+The firmware continuously evaluates the measured temperature against the configured threshold.
 
 ```text
-Temperature Reading
-          |
-          v
-Compare Against Limit
-          |
-    +-----+-----+
-    |           |
-    v           v
-   OK      OVERHEAT
+Temperature <= Limit
+        |
+        v
+       OK
+
+Temperature > Limit
+        |
+        v
+    OVERHEAT
 ```
 
-State transitions generate log entries.
+State transitions are automatically logged.
 
 ---
 
-## Uptime Tracking
-
-Timer1 interrupts are used to accumulate elapsed time.
-
-Output format:
+## Startup Sequence
 
 ```text
-HH:MM:SS
+Power On
+   |
+   v
+Initialize Drivers
+(UART, ADC, EEPROM, Timer)
+   |
+   v
+Validate EEPROM
+   |
+   +--> Invalid -> Load Defaults
+   |
+   +--> Valid -> Load Stored Configuration
+   |
+   v
+Start Services
+   |
+   v
+Enter Command Processing Loop
 ```
 
-Example:
-
-```text
-UPTIME: 12:15:42
-```
-
 ---
 
-## PC Host Commands
+## Target Hardware
 
-| User Command | Firmware Request |
-|-------------|------------------|
-| --voltage | get_voltage |
-| --temp | get_temp |
-| --status | get_status |
-| --uptime | get_time |
-| --templimit | get_tlimit |
-| --set_templimit value | set_tlimit value |
-| --log | get_log |
-| --clear_log | clear_log |
-| --all | get_all |
+* Microcontroller: PIC16F877A
+* Board: Picgenios
+* Clock: 20 MHz Crystal
+* Communication: UART
+* Compiler: XC8
+* IDE: MPLAB X
 
----
+*Note: PicsimLab software used to simulate hardware setup*
 
-## Build Instructions
 
-### Firmware
 
-Tools:
-- MPLAB X IDE
-- XC8 Compiler
-
-Target:
-- PIC16F877A
-
-### PC Host
-
-Requirements:
-- GCC
-- libserialport
-
----
-
-## Embedded Concepts Demonstrated
-
-- Embedded C
-- UART Communication
-- ADC Data Acquisition
-- EEPROM Persistence
-- Interrupt Handling
-- Timer Configuration
-- Circular Buffers
-- Event Logging
-- Command Parsing
-- Serial Protocol Design
-- Host-Firmware Integration
-- State Monitoring
-
----
-
-## Future Improvements
-
-- Finite State Machine architecture
-- CRC-protected UART frames
-- Configurable log depth
-- Unit tests for host application
-- Automated CI/CD builds
-- Multiple sensor support
