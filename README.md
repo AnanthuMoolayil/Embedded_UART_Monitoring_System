@@ -216,13 +216,19 @@ Tools:
 - XC8 Compiler
 
 Target:
-- PIC16F877A
+- Microcontroller: PIC16F877A
+- Board : Picgenios
 
 ### PC Host
 
 Requirements:
 - GCC
 - libserialport
+
+### Hardware setup simulation
+
+Tools:
+- PicsimLab
 
 ---
 
