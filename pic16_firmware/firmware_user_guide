@@ -6,8 +6,7 @@
 
 Before using any command, note the following:
 
-1. Commands are case-sensitive.
-2. All commands must be entered in lowercase.
+1. Commands are case-insensitive.
 3. Commands use underscore separators (`_`).
 4. Commands are transmitted as ASCII strings.
 5. Responses are terminated by:
@@ -18,21 +17,12 @@ Before using any command, note the following:
 
 6. Commands must match the supported syntax exactly.
 7. Leading or trailing spaces are not recommended.
-8. Temperature values are represented with one decimal place.
-9. Voltage values are represented with one decimal place.
-10. Temperature limit values are entered as whole numbers representing tenths of a degree.
+8. Voltage & Temperature values are represented with one decimal place.
+10. Temperature limit values entered must be:
+    a. Whole numbers or  numbers with one decimal place.
+    b. Within temeperature range(-20 to 100 °C)
 
-Example:
 
-```text
-set_tlimit 700
-```
-
-represents:
-
-```text
-70.0 °C
-```
 
 ---
 
@@ -48,12 +38,6 @@ Retrieves the latest voltage measurement.
 get_voltage
 ```
 
-### Example
-
-```text
-get_voltage
-```
-
 ### Example Response
 
 ```text
@@ -61,10 +45,6 @@ VOLTAGE: 12.4
 ***
 ```
 
-### Notes
-
-* Read-only command.
-* Returns the most recent ADC-derived voltage value.
 
 ---
 
@@ -80,23 +60,12 @@ Retrieves the latest temperature measurement.
 get_temp
 ```
 
-### Example
-
-```text
-get_temp
-```
-
 ### Example Response
 
 ```text
 TEMP: 36.7
 ***
 ```
-
-### Notes
-
-* Read-only command.
-* Returns the most recent ADC-derived temperature value.
 
 ---
 
@@ -168,13 +137,7 @@ set_tlimit <value>
 ### Example
 
 ```text
-set_tlimit 700
-```
-
-### Meaning
-
-```text
-700 = 70.0 °C
+set_tlimit 70.0
 ```
 
 ### Successful Response
@@ -188,7 +151,9 @@ DONE
 
 * Value is stored in EEPROM.
 * Persists after power cycle.
-* Must be numeric.
+* Must be a whole number or  number with one decimal place.
+* Within temeperature range(-20 to 100 °C).
+
 
 ---
 
@@ -235,7 +200,11 @@ UPTIME: 0:05:41 OK
 
 ### Notes
 
-Only state transitions are logged.
+* Only state transitions are logged.
+* If no logs present then the following response is received:
+  ```text
+  NO LOGS PRESENT
+  ```
 
 ---
 
@@ -257,7 +226,12 @@ clear_log
 DONE
 ***
 ```
+### Notes
 
+* If no logs present then the following response is received:
+  ```text
+  NO LOGS PRESENT
+  ```
 ---
 
 ## get_all
@@ -292,58 +266,76 @@ UPTIME: 01:15:42
 Input:
 
 ```text
-get_volt
+get_random
 ```
 
 Response:
 
 ```text
-ERROR: INVALID COMMAND
+Command not found!
 ***
 ```
 
-### Incorrect Capitalization
+### Invalid input number
 
 Input:
 
 ```text
-GET_TEMP
+set_tlimit 
+```
+Input:
+
+```text
+set_tlimit 12abc
 ```
 
 Response:
 
 ```text
-ERROR: INVALID COMMAND
+Invalid input number!
 ***
 ```
 
-### Missing Parameter
+### Incorrect decimal place
 
 Input:
 
 ```text
-set_tlimit
+set_tlimit 80.8956
 ```
 
 Response:
 
 ```text
-ERROR: INVALID COMMAND
+Input number cannot have decimal place exceeding 1!
 ***
 ```
 
-### Invalid Numeric Parameter
+### Input number not within range
 
 Input:
 
 ```text
-set_tlimit abc
+set_tlimit 105.6
 ```
 
 Response:
 
 ```text
-ERROR: INVALID COMMAND
+Input number not within set range!
+***
+```
+
+---
+
+# Error Response
+
+### EEPROM write error
+
+Response:
+
+```text
+eeprom load failed; restart!
 ***
 ```
 
@@ -353,8 +345,7 @@ ERROR: INVALID COMMAND
 
 | Category            | Requirement       |
 | ------------------- | ----------------- |
-| Command Case        | Lowercase only    |
-| Encoding            | ASCII             |
+| Command Case        | case insensitive    |
 | Response Terminator | `***`             |
 | Parameter Separator | Space             |
 | Decimal Display     | One decimal place |
