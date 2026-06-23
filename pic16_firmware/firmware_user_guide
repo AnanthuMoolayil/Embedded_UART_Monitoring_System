@@ -1,0 +1,363 @@
+# Embedded UART Monitoring System
+
+## Firmware Command User Guide
+
+### General Rules
+
+Before using any command, note the following:
+
+1. Commands are case-sensitive.
+2. All commands must be entered in lowercase.
+3. Commands use underscore separators (`_`).
+4. Commands are transmitted as ASCII strings.
+5. Responses are terminated by:
+
+```text
+***
+```
+
+6. Commands must match the supported syntax exactly.
+7. Leading or trailing spaces are not recommended.
+8. Temperature values are represented with one decimal place.
+9. Voltage values are represented with one decimal place.
+10. Temperature limit values are entered as whole numbers representing tenths of a degree.
+
+Example:
+
+```text
+set_tlimit 700
+```
+
+represents:
+
+```text
+70.0 °C
+```
+
+---
+
+## get_voltage
+
+### Purpose
+
+Retrieves the latest voltage measurement.
+
+### Command Format
+
+```text
+get_voltage
+```
+
+### Example
+
+```text
+get_voltage
+```
+
+### Example Response
+
+```text
+VOLTAGE: 12.4
+***
+```
+
+### Notes
+
+* Read-only command.
+* Returns the most recent ADC-derived voltage value.
+
+---
+
+## get_temp
+
+### Purpose
+
+Retrieves the latest temperature measurement.
+
+### Command Format
+
+```text
+get_temp
+```
+
+### Example
+
+```text
+get_temp
+```
+
+### Example Response
+
+```text
+TEMP: 36.7
+***
+```
+
+### Notes
+
+* Read-only command.
+* Returns the most recent ADC-derived temperature value.
+
+---
+
+## get_status
+
+### Purpose
+
+Displays current thermal state.
+
+### Command Format
+
+```text
+get_status
+```
+
+### Example Response
+
+```text
+STATUS: OK
+***
+```
+
+or
+
+```text
+STATUS: OVERHEAT
+***
+```
+
+### Notes
+
+The state depends on the configured temperature limit.
+
+---
+
+## get_tlimit
+
+### Purpose
+
+Displays the currently configured temperature threshold.
+
+### Command Format
+
+```text
+get_tlimit
+```
+
+### Example Response
+
+```text
+TEMP LIMIT: 70.0
+***
+```
+
+---
+
+## set_tlimit
+
+### Purpose
+
+Updates the temperature threshold and stores it in EEPROM.
+
+### Command Format
+
+```text
+set_tlimit <value>
+```
+
+### Example
+
+```text
+set_tlimit 700
+```
+
+### Meaning
+
+```text
+700 = 70.0 °C
+```
+
+### Successful Response
+
+```text
+DONE
+***
+```
+
+### Notes
+
+* Value is stored in EEPROM.
+* Persists after power cycle.
+* Must be numeric.
+
+---
+
+## get_time
+
+### Purpose
+
+Displays system uptime.
+
+### Command Format
+
+```text
+get_time
+```
+
+### Example Response
+
+```text
+UPTIME: 12:34:56
+***
+```
+
+---
+
+## get_log
+
+### Purpose
+
+Displays stored event log entries.
+
+### Command Format
+
+```text
+get_log
+```
+
+### Example Response
+
+```text
+UPTIME: 0:03:17 OVERHEAT
+UPTIME: 0:05:41 OK
+***
+```
+
+### Notes
+
+Only state transitions are logged.
+
+---
+
+## clear_log
+
+### Purpose
+
+Clears all stored log entries.
+
+### Command Format
+
+```text
+clear_log
+```
+
+### Successful Response
+
+```text
+DONE
+***
+```
+
+---
+
+## get_all
+
+### Purpose
+
+Displays all monitored parameters.
+
+### Command Format
+
+```text
+get_all
+```
+
+### Example Response
+
+```text
+VOLTAGE: 12.4
+TEMP: 35.8
+STATUS: OK
+TEMP LIMIT: 70.0
+UPTIME: 01:15:42
+***
+```
+
+---
+
+# Invalid Commands
+
+### Unsupported Command
+
+Input:
+
+```text
+get_volt
+```
+
+Response:
+
+```text
+ERROR: INVALID COMMAND
+***
+```
+
+### Incorrect Capitalization
+
+Input:
+
+```text
+GET_TEMP
+```
+
+Response:
+
+```text
+ERROR: INVALID COMMAND
+***
+```
+
+### Missing Parameter
+
+Input:
+
+```text
+set_tlimit
+```
+
+Response:
+
+```text
+ERROR: INVALID COMMAND
+***
+```
+
+### Invalid Numeric Parameter
+
+Input:
+
+```text
+set_tlimit abc
+```
+
+Response:
+
+```text
+ERROR: INVALID COMMAND
+***
+```
+
+---
+
+# Protocol Summary
+
+| Category            | Requirement       |
+| ------------------- | ----------------- |
+| Command Case        | Lowercase only    |
+| Encoding            | ASCII             |
+| Response Terminator | `***`             |
+| Parameter Separator | Space             |
+| Decimal Display     | One decimal place |
+| Persistent Settings | Temperature Limit |
+| Log Capacity        | 5 entries         |
+| State Values        | OK / OVERHEAT     |
