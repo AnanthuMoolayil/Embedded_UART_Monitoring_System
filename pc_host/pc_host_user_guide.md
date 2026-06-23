@@ -84,6 +84,7 @@ get_voltage
 Voltage           : 227.5 V
 ```
 
+
 ---
 
 # --temp
@@ -109,6 +110,7 @@ get_temp
 ```text
 Temperature       : -11 degC
 ```
+
 
 ---
 
@@ -142,6 +144,7 @@ or
 Status            : OVERHEAT
 ```
 
+
 ---
 
 # --templimit
@@ -167,6 +170,7 @@ get_tlimit
 ```text
 Temperature limit : 10.7 degC
 ```
+
 
 ---
 
@@ -207,6 +211,7 @@ Temperature limit value updated successfully.
 * Numeric parameter required.
 * Within temeperature range(-20 to 100 °C).
 
+
 ---
 
 # --uptime
@@ -232,6 +237,7 @@ get_time
 ```text
 Uptime            : 0  hr  14 min  46 secs
 ```
+
 
 ---
 
@@ -268,6 +274,7 @@ Log entry   2 |  uptime  0  hr  15 min  13 secs  |  state transition to  : OK
   No log entries found.
   ```
 
+
 ---
 
 # --clear_log
@@ -300,6 +307,8 @@ Log entries cleared.
   ```text
   No log entries present to be cleared.
   ```
+
+  
 ---
 
 # --all
@@ -330,11 +339,12 @@ Temperature limit : 75 degC
 Uptime            : 0  hr  16 min  1  secs
 ```
 
+
 ---
 
 # Invalid Commands
 
-## Unknown Command/ Invalid Input
+### Unknown Command/ Invalid Input
 
 Input:
 
@@ -372,6 +382,8 @@ Response:
 Error: incorrect command input format.
 ```
 
+---
+
 ### Input number not within range
 
 Input:
@@ -385,6 +397,7 @@ Response:
 ```text
 Error: input number not within range (-20 to 100 degC).
 ```
+
 
 ---
 
@@ -408,6 +421,8 @@ Output:
 Error: configuration file read error.
 Command aborted.
 ```
+
+---
 
 ## For COM port:
 
@@ -434,6 +449,8 @@ Output:
 ```text
 Error: COM port opening failed.
 ```
+
+---
 
 ## For serial communication:
 
