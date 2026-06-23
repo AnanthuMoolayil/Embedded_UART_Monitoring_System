@@ -1,6 +1,4 @@
-# Embedded UART Monitoring System
-
-## Firmware Command User Guide
+# Firmware Command User Guide
 
 ### General Rules
 
@@ -18,8 +16,8 @@ Before using any command, note the following:
 6. Commands must match the supported syntax exactly.
 7. Leading or trailing spaces are not recommended.
 8. Voltage & Temperature values are represented with one decimal place.
-10. Temperature limit values entered must be:
-    a. Whole numbers or  numbers with one decimal place.
+10. Temperature limit values entered must be:<br>
+    a. Whole numbers or  numbers with one decimal place.<br>
     b. Within temeperature range(-20 to 100 °C)
 
 
