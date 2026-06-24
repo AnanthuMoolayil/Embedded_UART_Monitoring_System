@@ -1,3 +1,5 @@
+[![PC Host Build](https://github.com/AnanthuMoolayil/Embedded_UART_Monitoring_System/actions/workflows/pc_host_build.yml/badge.svg)](https://github.com/AnanthuMoolayil/Embedded_UART_Monitoring_System/actions/workflows/pc_host_build.yml)
+
 # Embedded_UART_Monitoring_System
 
 Embedded monitoring system built around the PIC16F877A microcontroller and a desktop host application communicating through a custom UART command protocol.
