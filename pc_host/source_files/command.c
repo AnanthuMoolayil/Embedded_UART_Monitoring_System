@@ -293,7 +293,7 @@ void display_uptime(char *buf)
     while(token)
     {
         token=strtok(NULL, " :\r\n");
-        time=strtoul(token, NULL, 10); //Extract number from string.
+        time=(unsigned int)strtoul(token, NULL, 10); //Extract number from string.
         
         i++;
         
@@ -473,7 +473,7 @@ void display_log(char *buf)
         token=strtok(next_line, " :\r\n");
         while(token)
         {
-            time=strtoul(token, NULL, 10);
+            time=(unsigned int)strtoul(token, NULL, 10);
             switch(i)   //Due to response having a set format, position of desired token is known.
             {
                 case 1:
