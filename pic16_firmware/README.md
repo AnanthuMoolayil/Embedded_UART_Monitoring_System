@@ -169,5 +169,16 @@ Enter Command Processing Loop
 
 *Note: PicsimLab software used to simulate hardware setup*
 
+## Build Environment
+
+- MPLAB X IDE v5.35+
+- XC8 Compiler v3.10+
+
+## Build
+
+1. Open the `firmware` directory in MPLAB X.
+2. Ensure XC8 Compiler v3.10+ is installed.
+3. Select the default configuration.
+4. Build the project using F11.
 
 
