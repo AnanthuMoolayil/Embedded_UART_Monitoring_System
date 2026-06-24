@@ -1,0 +1,14 @@
+# MPLAB build outputs
+build/
+dist/
+
+# Local compiler settings
+nbproject/Makefile-local-*.mk
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.tmp

@@ -1,0 +1,31 @@
+# Executables
+*.exe
+*.out
+*.app
+
+# Object files
+*.o
+*.obj
+
+# Static/Dynamic libraries
+*.a
+*.so
+*.dll
+
+# Debug files
+*.dSYM/
+*.stackdump
+
+# VSCode / VSCodium
+.vscode/
+
+# Build folders
+build/
+
+# Temporary files
+*.tmp
+*.log
+
+# Config files
+.clangd
+

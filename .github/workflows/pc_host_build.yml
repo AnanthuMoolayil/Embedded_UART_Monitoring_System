@@ -1,0 +1,24 @@
+name: PC Host Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install libserialport-dev
+
+    - name: Build Host Application
+      working-directory: pc_host
+      run: make
