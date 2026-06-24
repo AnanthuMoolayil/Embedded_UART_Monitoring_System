@@ -1,4 +1,4 @@
-# Embedded_UART_Power_Monitor
+# Embedded_UART_Monitoring_System
 
 Embedded monitoring system built around the PIC16F877A microcontroller and a desktop host application communicating through a custom UART command protocol.
 
