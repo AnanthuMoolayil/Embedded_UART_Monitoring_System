@@ -176,7 +176,7 @@ Enter Command Processing Loop
 
 ## Build
 
-1. Open the `firmware` directory in MPLAB X.
+1. Open the `pic16_firmware` directory in MPLAB X.
 2. Ensure XC8 Compiler v3.10+ is installed.
 3. Select the default configuration.
 4. Build the project using F11.
