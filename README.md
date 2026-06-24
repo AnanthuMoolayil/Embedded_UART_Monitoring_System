@@ -81,6 +81,17 @@ This allows the host application to determine when a complete response has been 
 
 ---
 
+## Sample output
+
+### Firmware
+<img width="854" height="480" alt="firmware_output" src="https://github.com/user-attachments/assets/58742283-b43d-487f-93a6-53a09932b689" />
+
+
+### PC host
+<img width="854" height="303" alt="sample" src="https://github.com/user-attachments/assets/7010cadf-1976-473c-96c0-1c981efa4865" />
+
+---
+
 ## EEPROM Design
 
 ### Validation Byte
